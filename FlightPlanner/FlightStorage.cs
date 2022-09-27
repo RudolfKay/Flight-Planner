@@ -47,6 +47,42 @@ namespace FlightPlanner
             return null;
         }
 
+        public static Flight SearchForFlight(Flight flight)
+        {
+            if (_flights.Count <= 1)
+            {
+                return null;
+            }
+
+            var countryFrom = flight.From.Country.ToLower().Trim();
+            var cityFrom = flight.From.City.ToLower().Trim();
+            var airportFrom = flight.From.AirPortCode.ToLower().Trim();
+
+            var countryTo = flight.To.Country.ToLower().Trim();
+            var cityTo = flight.To.City.ToLower().Trim();
+            var airportTo = flight.To.AirPortCode.ToLower().Trim();
+
+            var carrier = flight.Carrier.ToLower().Trim();
+            var departureTime = flight.DepartureTime.Trim();
+
+            foreach (Flight f in _flights)
+            {
+                if (f.From.Country.ToLower().Trim().Equals(countryFrom) &&
+                    f.From.City.ToLower().Trim().Equals(cityFrom) &&
+                    f.From.AirPortCode.ToLower().Trim().Equals(airportFrom) &&
+                    f.To.Country.ToLower().Trim().Equals(countryTo) &&
+                    f.To.City.ToLower().Trim().Equals(cityTo) &&
+                    f.To.AirPortCode.ToLower().Trim().Equals(airportTo) &&
+                    f.Carrier.ToLower().Trim().Equals(carrier) &&
+                    f.DepartureTime.Trim().Equals(departureTime))
+                {
+                    return f;
+                }
+            }
+
+            return null;
+        }
+
         public static void DeleteFlight(Flight flight)
         {
             _flights.Remove(flight);

@@ -25,6 +25,13 @@ namespace FlightPlanner.Controllers
         [HttpPost]
         public IActionResult SearchFlights(Flight flight)
         {
+            var f = FlightStorage.SearchForFlight(flight);
+
+            if (f == null)
+            {
+                return Ok();
+            }
+
             return Ok(flight);
         }
     
@@ -32,7 +39,14 @@ namespace FlightPlanner.Controllers
         [HttpGet]
         public IActionResult GetFlightById(int id)
         {
-           return Ok();
+            var flight = FlightStorage.GetFlight(id);
+            
+            if (flight == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(flight);
         }
     }
 }
