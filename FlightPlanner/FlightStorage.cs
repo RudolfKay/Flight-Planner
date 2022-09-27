@@ -62,7 +62,6 @@ namespace FlightPlanner
             var cityTo = flight.To.City.ToLower().Trim();
             var airportTo = flight.To.AirPortCode.ToLower().Trim();
 
-            var carrier = flight.Carrier.ToLower().Trim();
             var departureTime = flight.DepartureTime.Trim();
 
             foreach (Flight f in _flights)
@@ -73,8 +72,11 @@ namespace FlightPlanner
                     f.To.Country.ToLower().Trim().Equals(countryTo) &&
                     f.To.City.ToLower().Trim().Equals(cityTo) &&
                     f.To.AirPortCode.ToLower().Trim().Equals(airportTo) &&
-                    f.Carrier.ToLower().Trim().Equals(carrier) &&
                     f.DepartureTime.Trim().Equals(departureTime))
+
+                /*if (f.From == flight.From &&
+                    f.To == flight.To &&
+                    f.DepartureTime == flight.DepartureTime)*/
                 {
                     return f;
                 }
