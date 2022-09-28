@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace FlightPlanner
 {
     public class FlightStorage
     {
-        private static List<Flight> _flights = new List<Flight>();
+        private static readonly List<Flight> _flights = new();
         private static int _id = 0;
 
         public static Flight AddFlight(Flight flight)
@@ -33,6 +33,7 @@ namespace FlightPlanner
                     f.From.AirPortCode.ToLower().Trim().Contains(searchFor))
                 {
                     Airport airport = f.From;
+
                     return airport;
                 }
                 if (f.To.Country.ToLower().Trim().Contains(searchFor) ||
@@ -40,45 +41,8 @@ namespace FlightPlanner
                     f.To.AirPortCode.ToLower().Trim().Contains(searchFor))
                 {
                     Airport airport = f.To;
+
                     return airport;
-                }
-            }
-
-            return null;
-        }
-
-        public static Flight SearchForFlight(Flight flight)
-        {
-            if (_flights.Count <= 1)
-            {
-                return null;
-            }
-
-            var countryFrom = flight.From.Country.ToLower().Trim();
-            var cityFrom = flight.From.City.ToLower().Trim();
-            var airportFrom = flight.From.AirPortCode.ToLower().Trim();
-
-            var countryTo = flight.To.Country.ToLower().Trim();
-            var cityTo = flight.To.City.ToLower().Trim();
-            var airportTo = flight.To.AirPortCode.ToLower().Trim();
-
-            var departureTime = flight.DepartureTime.Trim();
-
-            foreach (Flight f in _flights)
-            {
-                if (f.From.Country.ToLower().Trim().Equals(countryFrom) &&
-                    f.From.City.ToLower().Trim().Equals(cityFrom) &&
-                    f.From.AirPortCode.ToLower().Trim().Equals(airportFrom) &&
-                    f.To.Country.ToLower().Trim().Equals(countryTo) &&
-                    f.To.City.ToLower().Trim().Equals(cityTo) &&
-                    f.To.AirPortCode.ToLower().Trim().Equals(airportTo) &&
-                    f.DepartureTime.Trim().Equals(departureTime))
-
-                /*if (f.From == flight.From &&
-                    f.To == flight.To &&
-                    f.DepartureTime == flight.DepartureTime)*/
-                {
-                    return f;
                 }
             }
 
@@ -151,6 +115,48 @@ namespace FlightPlanner
             }
 
             return flight;
+        }
+
+        public static PageResult SearchForFlight(SearchFlightsRequest req)
+        {
+            PageResult pr = new();
+
+            if (IsFlightSearchRequestValid(req) == null)
+            {
+                return null;
+            }
+
+            var airportFrom = req.From.ToLower().Trim();
+            var airportTo = req.To.ToLower().Trim();
+            //var departureTime = req.DepartureTime.Trim();
+
+            foreach (Flight f in _flights)
+            {
+                if (
+                    f.From.AirPortCode.ToLower().Trim().Equals(airportFrom) &&
+                    f.To.AirPortCode.ToLower().Trim().Equals(airportTo))/* &&
+                    f.DepartureTime.Trim().Equals(departureTime))*/
+                {
+                    pr.Items.Add(f);
+                    pr.TotalItems++;
+                }
+            }
+
+            return pr;
+        }
+
+        public static SearchFlightsRequest IsFlightSearchRequestValid(SearchFlightsRequest req)
+        {
+            if (req == null ||
+                string.IsNullOrEmpty(req.From) ||
+                string.IsNullOrEmpty(req.To) ||
+               /* string.IsNullOrEmpty(req.DepartureTime) ||*/
+                req.From == req.To)
+            {
+                return null;
+            }
+
+            return req;
         }
 
         public static void Clear()

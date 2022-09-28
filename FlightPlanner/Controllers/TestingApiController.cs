@@ -12,6 +12,7 @@ namespace FlightPlanner.Controllers
         public IActionResult Clear()
         {
             FlightStorage.Clear();
+
             return Ok();
         }
     }

@@ -7,37 +7,43 @@ namespace FlightPlanner.Controllers
     [ApiController, Authorize]
     public class AdminApiController : ControllerBase
     {
+        private static readonly object taskLock = new();
+
         [Route("flights/{id}")]
         [HttpGet]
         public IActionResult GetFlight(int id)
         {
-            var flight = FlightStorage.GetFlight(id);
-
-            if (flight == null)
+            lock(taskLock)
             {
-                return NotFound(); //404
+                if (FlightStorage.GetFlight(id) == null)
+                {
+                    return NotFound(); //404
+                }
             }
-
-            return Ok(flight); //200
+            
+            return Ok(); //200
         }
 
         [Route("flights")]
         [HttpPut]
         public IActionResult PutFlight(Flight flight)
         {
-            if (FlightStorage.IsFlightNullOrEmpty(flight) == null || 
-                FlightStorage.IsAirportValid(flight) == null ||
-                FlightStorage.IsTimeValid(flight) == null)
+            lock (taskLock)
             {
-                return BadRequest(); //400
-            }
-            if (FlightStorage.GetFlight(flight.Id) != null || 
-                FlightStorage.IsFlightValid(flight) == null)
-            {
-                return Conflict(); //409
-            }
+                if (FlightStorage.IsFlightNullOrEmpty(flight) == null || 
+                    FlightStorage.IsAirportValid(flight) == null ||
+                    FlightStorage.IsTimeValid(flight) == null)
+                {
+                    return BadRequest(); //400
+                }
+                if (FlightStorage.GetFlight(flight.Id) != null || 
+                    FlightStorage.IsFlightValid(flight) == null)
+                {
+                    return Conflict(); //409
+                }
 
-            flight = FlightStorage.AddFlight(flight);
+                flight = FlightStorage.AddFlight(flight);
+            }
 
             return Created("",flight); //201
         }
@@ -46,14 +52,18 @@ namespace FlightPlanner.Controllers
         [HttpDelete]
         public IActionResult DeleteFlight(int id)
         {
-            var flight = FlightStorage.GetFlight(id);
-
-            if (flight == null)
+            lock (taskLock)
             {
-                return Ok();
+                var flight = FlightStorage.GetFlight(id);
+
+                if (flight == null)
+                {
+                    return Ok();
+                }
+
+                FlightStorage.DeleteFlight(flight);
             }
 
-            FlightStorage.DeleteFlight(flight);
             return Ok();
         }
     }

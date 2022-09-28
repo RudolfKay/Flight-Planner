@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace FlightPlanner.Controllers
 {
@@ -7,6 +6,8 @@ namespace FlightPlanner.Controllers
     [ApiController]
     public class CustomerApiController : ControllerBase
     {
+        private static readonly object taskLock = new object();
+
         [Route("airports")]
         [HttpGet]
         public IActionResult SearchAirports(string search)
@@ -23,16 +24,19 @@ namespace FlightPlanner.Controllers
 
         [Route("flights/search")]
         [HttpPost]
-        public IActionResult SearchFlights(Flight flight)
+        public IActionResult SearchFlights(SearchFlightsRequest req)
         {
-            var f = FlightStorage.SearchForFlight(flight);
-
-            if (f == null)
+            lock (taskLock)
             {
-                return Ok();
-            }
+                var pageResult = FlightStorage.SearchForFlight(req);
 
-            return Ok(flight);
+                if (pageResult == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(pageResult);
+            }
         }
     
         [Route("flights/{id}")]
@@ -40,7 +44,7 @@ namespace FlightPlanner.Controllers
         public IActionResult GetFlightById(int id)
         {
             var flight = FlightStorage.GetFlight(id);
-            
+
             if (flight == null)
             {
                 return NotFound();
