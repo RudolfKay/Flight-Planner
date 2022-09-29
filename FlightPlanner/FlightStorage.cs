@@ -128,14 +128,12 @@ namespace FlightPlanner
 
             var airportFrom = req.From.ToLower().Trim();
             var airportTo = req.To.ToLower().Trim();
-            //var departureTime = req.DepartureTime.Trim();
 
             foreach (Flight f in _flights)
             {
                 if (
                     f.From.AirPortCode.ToLower().Trim().Equals(airportFrom) &&
-                    f.To.AirPortCode.ToLower().Trim().Equals(airportTo))/* &&
-                    f.DepartureTime.Trim().Equals(departureTime))*/
+                    f.To.AirPortCode.ToLower().Trim().Equals(airportTo))
                 {
                     pr.Items.Add(f);
                     pr.TotalItems++;
@@ -150,7 +148,6 @@ namespace FlightPlanner
             if (req == null ||
                 string.IsNullOrEmpty(req.From) ||
                 string.IsNullOrEmpty(req.To) ||
-               /* string.IsNullOrEmpty(req.DepartureTime) ||*/
                 req.From == req.To)
             {
                 return null;
