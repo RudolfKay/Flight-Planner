@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace FlightPlanner
 {
@@ -12,5 +13,10 @@ namespace FlightPlanner
         public DbSet<Flight> Flights { get; set; }
 
         public DbSet<Airport> Airports { get; set; }
+
+        internal Flight FirstOrDefault(Func<object, bool> value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

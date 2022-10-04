@@ -30,6 +30,9 @@ namespace FlightPlanner.Controllers
                 flight = _context.Flights.
                     Include(f => f.From).
                     Include(f => f.To).
+                    /*Include(f => f.Carrier).
+                    Include(f => f.DepartureTime).
+                    Include(f => f.ArrivalTime).*/
                     FirstOrDefault(f => f.Id == id);
 
                 if (flight == null)
@@ -53,12 +56,13 @@ namespace FlightPlanner.Controllers
                 {
                     return BadRequest(); //400
                 }
-                if (_context.Flights.FirstOrDefault(f => f.Id == flight.Id) != null || 
+                if (_flightStorage.GetFlight(flight.Id) != null || 
                     _flightStorage.IsFlightValid(flight) == null)
                 {
                     return Conflict(); //409
                 }
 
+                //flight.Id = _context.Flights.Count() + 1;
                 _context.Flights.Add(flight);
                 _context.SaveChanges();
             }

@@ -51,7 +51,7 @@ namespace FlightPlanner.Controllers
         [HttpGet]
         public IActionResult GetFlightById(int id)
         {
-            var flight = FlightStorage.GetFlight(id);
+            var flight = _flightStorage.GetFlight(id);
 
             if (flight == null)
             {

@@ -25,11 +25,6 @@ namespace FlightPlanner
             return flight;
         }
 
-        public static Flight GetFlight(int id)
-        {
-            return _flights.FirstOrDefault(f => f.Id == id);
-        }
-
         public static void DeleteFlight(Flight flight)
         {
             _flights.Remove(flight);
@@ -42,6 +37,11 @@ namespace FlightPlanner
         }
 
         //-------------------------------------------------------//
+
+        public Flight GetFlight(int id)
+        {
+            return _context.Flights.FirstOrDefault(f => f.Id == id);
+        }
 
         public Flight IsFlightNullOrEmpty(Flight flight)
         {
@@ -76,6 +76,11 @@ namespace FlightPlanner
         {
             foreach (Flight temp in _context.Flights)
             {
+                if (IsFlightNullOrEmpty(temp) == null)
+                {
+                    return null;
+                }
+
                 if (flight.From.Country.ToLower().Trim() == temp.From.Country.ToLower().Trim() &&
                     flight.From.City.ToLower().Trim() == temp.From.City.ToLower().Trim() &&
                     flight.From.AirPortCode.ToLower().Trim() == temp.From.AirPortCode.ToLower().Trim() &&
