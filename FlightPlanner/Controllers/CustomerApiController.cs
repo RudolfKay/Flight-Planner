@@ -6,13 +6,21 @@ namespace FlightPlanner.Controllers
     [ApiController]
     public class CustomerApiController : ControllerBase
     {
+        private readonly FlightPlannerDbContext _context;
+        private readonly FlightStorage _flightStorage;
         private static readonly object taskLock = new object();
+
+        public CustomerApiController(FlightPlannerDbContext context)
+        {
+            _context = context;
+            _flightStorage = new FlightStorage(context);
+        }
 
         [Route("airports")]
         [HttpGet]
         public IActionResult SearchAirports(string search)
         {
-            var airport = FlightStorage.SearchForAirport(search);
+            var airport = _flightStorage.SearchForAirport(search);
 
             if (airport == null)
             {
@@ -28,7 +36,7 @@ namespace FlightPlanner.Controllers
         {
             lock (taskLock)
             {
-                var pageResult = FlightStorage.SearchForFlight(req);
+                var pageResult = _flightStorage.SearchForFlight(req);
 
                 if (pageResult == null)
                 {

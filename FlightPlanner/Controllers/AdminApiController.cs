@@ -10,11 +10,13 @@ namespace FlightPlanner.Controllers
     public class AdminApiController : ControllerBase
     {
         private readonly FlightPlannerDbContext _context;
+        private readonly FlightStorage _flightStorage;
         private static readonly object taskLock = new();
 
         public AdminApiController(FlightPlannerDbContext context)
         {
             _context = context;
+            _flightStorage = new FlightStorage(context);
         }
 
         [Route("flights/{id}")]
@@ -45,14 +47,14 @@ namespace FlightPlanner.Controllers
         {
             lock (taskLock)
             {
-                if (FlightStorage.IsFlightNullOrEmpty(flight) == null || 
-                    FlightStorage.IsAirportValid(flight) == null ||
-                    FlightStorage.IsTimeValid(flight) == null)
+                if (_flightStorage.IsFlightNullOrEmpty(flight) == null || 
+                    _flightStorage.IsAirportValid(flight) == null ||
+                    _flightStorage.IsTimeValid(flight) == null)
                 {
                     return BadRequest(); //400
                 }
                 if (_context.Flights.FirstOrDefault(f => f.Id == flight.Id) != null || 
-                    FlightStorage.IsFlightValid(flight) == null)
+                    _flightStorage.IsFlightValid(flight) == null)
                 {
                     return Conflict(); //409
                 }

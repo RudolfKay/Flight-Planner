@@ -15,6 +15,8 @@ namespace FlightPlanner
             _context = context;
         }
 
+        //---------------------Deprecated------------------------//
+
         public static Flight AddFlight(Flight flight)
         {
             flight.Id = ++_id;
@@ -39,32 +41,7 @@ namespace FlightPlanner
             _id = 0;
         }
 
-        public Airport SearchForAirport(string search)
-        {
-            var searchFor = search.ToLower().Trim();
-
-            foreach (Flight f in _context.Flights)
-            {
-                if (f.From.Country.ToLower().Trim().Contains(searchFor) ||
-                    f.From.City.ToLower().Trim().Contains(searchFor) ||
-                    f.From.AirPortCode.ToLower().Trim().Contains(searchFor))
-                {
-                    Airport airport = f.From;
-
-                    return airport;
-                }
-                if (f.To.Country.ToLower().Trim().Contains(searchFor) ||
-                    f.To.City.ToLower().Trim().Contains(searchFor) ||
-                    f.To.AirPortCode.ToLower().Trim().Contains(searchFor))
-                {
-                    Airport airport = f.To;
-
-                    return airport;
-                }
-            }
-
-            return null;
-        }
+        //-------------------------------------------------------//
 
         public Flight IsFlightNullOrEmpty(Flight flight)
         {
@@ -127,6 +104,33 @@ namespace FlightPlanner
             }
 
             return flight;
+        }
+
+        public Airport SearchForAirport(string search)
+        {
+            var searchFor = search.ToLower().Trim();
+
+            foreach (Flight f in _context.Flights)
+            {
+                if (f.From.Country.ToLower().Trim().Contains(searchFor) ||
+                    f.From.City.ToLower().Trim().Contains(searchFor) ||
+                    f.From.AirPortCode.ToLower().Trim().Contains(searchFor))
+                {
+                    Airport airport = f.From;
+
+                    return airport;
+                }
+                if (f.To.Country.ToLower().Trim().Contains(searchFor) ||
+                    f.To.City.ToLower().Trim().Contains(searchFor) ||
+                    f.To.AirPortCode.ToLower().Trim().Contains(searchFor))
+                {
+                    Airport airport = f.To;
+
+                    return airport;
+                }
+            }
+
+            return null;
         }
 
         public PageResult SearchForFlight(SearchFlightsRequest req)
