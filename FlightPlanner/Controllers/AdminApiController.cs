@@ -16,7 +16,7 @@ namespace FlightPlanner.Controllers
         public AdminApiController(FlightPlannerDbContext context)
         {
             _context = context;
-            _flightStorage = new FlightStorage(context);
+            _flightStorage = new FlightStorage();
         }
 
         [Route("flights/{id}")]
@@ -30,9 +30,6 @@ namespace FlightPlanner.Controllers
                 flight = _context.Flights.
                     Include(f => f.From).
                     Include(f => f.To).
-                    /*Include(f => f.Carrier).
-                    Include(f => f.DepartureTime).
-                    Include(f => f.ArrivalTime).*/
                     FirstOrDefault(f => f.Id == id);
 
                 if (flight == null)
@@ -48,37 +45,40 @@ namespace FlightPlanner.Controllers
         [HttpPut]
         public IActionResult PutFlight(Flight flight)
         {
+            if (_flightStorage.IsFlightNullOrEmpty(flight) == null || 
+                _flightStorage.IsAirportValid(flight) == null ||
+                _flightStorage.IsTimeValid(flight) == null)
+            {
+                return BadRequest(); //400
+            }
+
             lock (taskLock)
             {
-                if (_flightStorage.IsFlightNullOrEmpty(flight) == null || 
-                    _flightStorage.IsAirportValid(flight) == null ||
-                    _flightStorage.IsTimeValid(flight) == null)
-                {
-                    return BadRequest(); //400
-                }
-                if (_flightStorage.GetFlight(flight.Id) != null || 
-                    _flightStorage.IsFlightValid(flight) == null)
+                var flights = _context.Flights.
+                    Include(f => f.From).
+                    Include(f => f.To).
+                    ToList();
+
+                if (_flightStorage.GetFlight(flight.Id, _context) != null ||
+                    _flightStorage.IsFlightValid(flights, flight) == null)
                 {
                     return Conflict(); //409
                 }
 
-                //flight.Id = _context.Flights.Count() + 1;
                 _context.Flights.Add(flight);
                 _context.SaveChanges();
-            }
 
-            return Created("",flight); //201
+                return Created("",flight); //201
+            }
         }
 
         [Route("flights/{id}")]
         [HttpDelete]
         public IActionResult DeleteFlight(int id)
         {
-            Flight flight = null;
-
             lock (taskLock)
             {
-                flight = _context.Flights.FirstOrDefault(f => f.Id == id);
+                var flight = _context.Flights.FirstOrDefault(f => f.Id == id);
 
                 if (flight == null)
                 {
@@ -87,9 +87,9 @@ namespace FlightPlanner.Controllers
 
                 _context.Flights.Remove(flight);
                 _context.SaveChanges();
-            }
 
-            return Ok();
+                return Ok();
+            }
         }
     }
 }
