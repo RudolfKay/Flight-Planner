@@ -11,10 +11,10 @@ namespace FlightPlanner.Controllers
     [ApiController]
     public class CustomerApiController : ControllerBase
     {
-        private readonly IFlightService<Flight> _flightService;
+        private readonly IFlightService _flightService;
         private readonly IFlightValidator _flightValidator;
 
-        public CustomerApiController(IFlightService<Flight> flightService)
+        public CustomerApiController(IFlightService flightService)
         {
             _flightService = flightService;
             _flightValidator = new FlightValidator();
@@ -24,24 +24,31 @@ namespace FlightPlanner.Controllers
         [HttpGet]
         public IActionResult SearchAirports(string search)
         {
-            /*var flights = _context.Flights.
-                Include(f => f.From).
-                Include(f => f.To).
-                ToList();*/
+            var flights = _flightService.GetAll();
+            var airport = _flightService.SearchForAirport(flights, search);
 
-            return Ok();
+            if (airport == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new []{airport});
         }
 
         [Route("flights/search")]
         [HttpPost]
         public IActionResult SearchFlights(SearchFlightsRequest req)
         {
-            /*var flights = _context.Flights.
-                Include(f => f.From).
-                Include(f => f.To).
-                ToList();*/
+            var flights = _flightService.GetAll();
 
-            return Ok();
+            var pageResult = _flightService.SearchForFlight(req, flights);
+
+            if (pageResult == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(pageResult);
         }
     
         [Route("flights/{id}")]

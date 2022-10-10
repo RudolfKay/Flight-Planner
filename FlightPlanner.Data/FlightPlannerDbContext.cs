@@ -1,7 +1,6 @@
 ﻿using FlightPlanner.Core.Models;
 using FlightPlanner.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Threading.Tasks;
 
 namespace FlightPlanner
@@ -20,11 +19,6 @@ namespace FlightPlanner
         public Task<int> SaveChangesAsync()
         {
             return base.SaveChangesAsync();
-        }
-
-        internal Flight FirstOrDefault(Func<object, bool> value)
-        {
-            throw new NotImplementedException();
         }
     }
 }

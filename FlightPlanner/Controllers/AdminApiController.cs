@@ -10,13 +10,13 @@ namespace FlightPlanner.Controllers
     [ApiController, Authorize]
     public class AdminApiController : ControllerBase
     {
-        private readonly IFlightService<Flight> _flightService;
+        private readonly IFlightService _flightService;
         private readonly IFlightValidator _flightValidator;
 
-        public AdminApiController(IFlightService<Flight> flightService)
+        public AdminApiController(IFlightService flightService, IFlightValidator flightValidator)
         {
             _flightService = flightService;
-            _flightValidator = new FlightValidator();
+            _flightValidator = flightValidator;
         }
 
         [Route("flights/{id}")]
@@ -42,7 +42,7 @@ namespace FlightPlanner.Controllers
                 return BadRequest(); //400
             }
 
-            if (_flightService.Exists(flight) ||
+            if (!_flightService.Exists(flight) ||
                 _flightService.GetCompleteFlightById(flight.Id) != null)
             {
                 return Conflict(); //409

@@ -12,7 +12,7 @@ namespace FlightPlanner.Core.Services
 
         void Update(T entity);
 
-        List<T> GetAll(T entity);
+        List<T> GetAll();
 
         T getById(int id);
 

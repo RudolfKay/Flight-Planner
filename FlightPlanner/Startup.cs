@@ -11,6 +11,7 @@ using FlightPlanner.Core.Services;
 using FlightPlanner.Services;
 using FlightPlanner.Core.Models;
 using FlightPlanner.Core.Validations;
+using FlightPlanner.Data;
 
 namespace FlightPlanner
 {
@@ -40,10 +41,11 @@ namespace FlightPlanner
                 options.UseSqlServer(Configuration.GetConnectionString("flight-planner"));
             });
 
+            services.AddScoped<IFlightPlannerDbContext, FlightPlannerDbContext>();
             services.AddScoped<IDbService, DbService>();
-            services.AddScoped<IEntityService<Airport>, EntityService<Airport>>();
             services.AddScoped<IEntityService<Flight>, EntityService<Flight>>();
-            services.AddScoped<IFlightService<Flight>, FlightService>();
+            services.AddScoped<IEntityService<Airport>, EntityService<Airport>>();
+            services.AddScoped<IFlightService, FlightService>();
             services.AddScoped<IFlightValidator, FlightValidator>();
             services.AddScoped<IAirportValidator, AirportValidator>();
         }

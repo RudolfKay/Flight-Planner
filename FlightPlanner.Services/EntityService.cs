@@ -10,7 +10,6 @@ namespace FlightPlanner.Services
     {
         public EntityService(IFlightPlannerDbContext context) : base(context)
         {
-            _context = context;
         }
 
         public void Create(T entity)
@@ -28,7 +27,7 @@ namespace FlightPlanner.Services
             Update<T>(entity);
         }
 
-        public List<T> GetAll(T entity)
+        public List<T> GetAll()
         {
             return GetAll<T>();
         }
