@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using FlightPlanner.Filters;
+using FlightPlanner.Core.Services;
+using FlightPlanner.Services;
+using FlightPlanner.Core.Models;
+using FlightPlanner.Core.Validations;
 
 namespace FlightPlanner
 {
@@ -35,6 +39,13 @@ namespace FlightPlanner
             {
                 options.UseSqlServer(Configuration.GetConnectionString("flight-planner"));
             });
+
+            services.AddScoped<IDbService, DbService>();
+            services.AddScoped<IEntityService<Airport>, EntityService<Airport>>();
+            services.AddScoped<IEntityService<Flight>, EntityService<Flight>>();
+            services.AddScoped<IFlightService<Flight>, FlightService>();
+            services.AddScoped<IFlightValidator, FlightValidator>();
+            services.AddScoped<IAirportValidator, AirportValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

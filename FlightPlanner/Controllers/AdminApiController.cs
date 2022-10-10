@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using FlightPlanner.Core.Services;
+using FlightPlanner.Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using FlightPlanner.Core.Validations;
 
 namespace FlightPlanner.Controllers
 {
@@ -9,33 +10,24 @@ namespace FlightPlanner.Controllers
     [ApiController, Authorize]
     public class AdminApiController : ControllerBase
     {
-        private readonly FlightPlannerDbContext _context;
-        private readonly FlightStorage _flightStorage;
-        private static readonly object taskLock = new();
+        private readonly IFlightService<Flight> _flightService;
+        private readonly IFlightValidator _flightValidator;
 
-        public AdminApiController(FlightPlannerDbContext context)
+        public AdminApiController(IFlightService<Flight> flightService)
         {
-            _context = context;
-            _flightStorage = new FlightStorage();
+            _flightService = flightService;
+            _flightValidator = new FlightValidator();
         }
 
         [Route("flights/{id}")]
         [HttpGet]
         public IActionResult GetFlight(int id)
         {
-            Flight flight = null;
+            Flight flight = _flightService.GetCompleteFlightById(id);
 
-            lock(taskLock)
+            if (flight == null)
             {
-                flight = _context.Flights.
-                    Include(f => f.From).
-                    Include(f => f.To).
-                    FirstOrDefault(f => f.Id == id);
-
-                if (flight == null)
-                {
-                    return NotFound(); //404
-                }
+                return NotFound(); //404
             }
             
             return Ok(flight); //200
@@ -45,51 +37,34 @@ namespace FlightPlanner.Controllers
         [HttpPut]
         public IActionResult PutFlight(Flight flight)
         {
-            if (_flightStorage.IsFlightNullOrEmpty(flight) == null || 
-                _flightStorage.IsAirportValid(flight) == null ||
-                _flightStorage.IsTimeValid(flight) == null)
+            if (_flightValidator.IsFlightValid(flight))
             {
                 return BadRequest(); //400
             }
 
-            lock (taskLock)
+            if (_flightService.Exists(flight) ||
+                _flightService.GetCompleteFlightById(flight.Id) != null)
             {
-                var flights = _context.Flights.
-                    Include(f => f.From).
-                    Include(f => f.To).
-                    ToList();
-
-                if (_flightStorage.GetFlight(flight.Id, _context) != null ||
-                    _flightStorage.IsFlightValid(flights, flight) == null)
-                {
-                    return Conflict(); //409
-                }
-
-                _context.Flights.Add(flight);
-                _context.SaveChanges();
-
-                return Created("",flight); //201
+                return Conflict(); //409
             }
+
+            _flightService.Create(flight);
+
+            return Created("",flight); //201
         }
 
         [Route("flights/{id}")]
         [HttpDelete]
         public IActionResult DeleteFlight(int id)
         {
-            lock (taskLock)
+            Flight flight = _flightService.GetCompleteFlightById(id);
+
+            if (flight != null)
             {
-                var flight = _context.Flights.FirstOrDefault(f => f.Id == id);
-
-                if (flight == null)
-                {
-                    return Ok();
-                }
-
-                _context.Flights.Remove(flight);
-                _context.SaveChanges();
-
-                return Ok();
+                _flightService.Delete(flight);
             }
+
+            return Ok();
         }
     }
 }

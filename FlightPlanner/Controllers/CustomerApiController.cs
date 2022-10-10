@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using FlightPlanner.Core.Models;
+using FlightPlanner.Core.Services;
+using FlightPlanner.Core.Validations;
 
 namespace FlightPlanner.Controllers
 {
@@ -8,69 +11,51 @@ namespace FlightPlanner.Controllers
     [ApiController]
     public class CustomerApiController : ControllerBase
     {
-        private readonly FlightPlannerDbContext _context;
-        private static readonly object taskLock = new();
-        private readonly FlightStorage _flightStorage;
+        private readonly IFlightService<Flight> _flightService;
+        private readonly IFlightValidator _flightValidator;
 
-        public CustomerApiController(FlightPlannerDbContext context)
+        public CustomerApiController(IFlightService<Flight> flightService)
         {
-            _context = context;
-            _flightStorage = new FlightStorage();
+            _flightService = flightService;
+            _flightValidator = new FlightValidator();
         }
 
         [Route("airports")]
         [HttpGet]
         public IActionResult SearchAirports(string search)
         {
-            var flights = _context.Flights.
+            /*var flights = _context.Flights.
                 Include(f => f.From).
                 Include(f => f.To).
-                ToList();
+                ToList();*/
 
-            var airport = _flightStorage.SearchForAirport(flights, search);
-
-            if (airport == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(new []{airport});
+            return Ok();
         }
 
         [Route("flights/search")]
         [HttpPost]
         public IActionResult SearchFlights(SearchFlightsRequest req)
         {
-            var flights = _context.Flights.
+            /*var flights = _context.Flights.
                 Include(f => f.From).
                 Include(f => f.To).
-                ToList();
+                ToList();*/
 
-            lock (taskLock)
-            {
-                var pageResult = _flightStorage.SearchForFlight(req, flights);
-
-                if (pageResult == null)
-                {
-                    return BadRequest();
-                }
-
-                return Ok(pageResult);
-            }
+            return Ok();
         }
     
         [Route("flights/{id}")]
         [HttpGet]
         public IActionResult GetFlightById(int id)
         {
-            var flight = _flightStorage.GetFlight(id, _context);
+            Flight flight = _flightService.GetCompleteFlightById(id);
 
-            if (flight == null)
+            if (flight != null)
             {
-                return NotFound();
+                return Ok(flight);
             }
 
-            return Ok(flight);
+            return BadRequest();
         }
     }
 }

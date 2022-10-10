@@ -4,14 +4,16 @@ using FlightPlanner;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace FlightPlanner.Migrations
+namespace FlightPlanner.Data.Migrations
 {
     [DbContext(typeof(FlightPlannerDbContext))]
-    partial class FlightPlannerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221010163443_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -19,7 +21,7 @@ namespace FlightPlanner.Migrations
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("FlightPlanner.Airport", b =>
+            modelBuilder.Entity("FlightPlanner.Core.Models.Airport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -40,7 +42,7 @@ namespace FlightPlanner.Migrations
                     b.ToTable("Airports");
                 });
 
-            modelBuilder.Entity("FlightPlanner.Flight", b =>
+            modelBuilder.Entity("FlightPlanner.Core.Models.Flight", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -71,13 +73,13 @@ namespace FlightPlanner.Migrations
                     b.ToTable("Flights");
                 });
 
-            modelBuilder.Entity("FlightPlanner.Flight", b =>
+            modelBuilder.Entity("FlightPlanner.Core.Models.Flight", b =>
                 {
-                    b.HasOne("FlightPlanner.Airport", "From")
+                    b.HasOne("FlightPlanner.Core.Models.Airport", "From")
                         .WithMany()
                         .HasForeignKey("FromId");
 
-                    b.HasOne("FlightPlanner.Airport", "To")
+                    b.HasOne("FlightPlanner.Core.Models.Airport", "To")
                         .WithMany()
                         .HasForeignKey("ToId");
 

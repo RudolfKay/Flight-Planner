@@ -5,6 +5,12 @@ VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlightPlanner", "FlightPlanner\FlightPlanner.csproj", "{C0EB3927-86AB-4A6C-B31B-DF8FE830EF50}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightPlanner.Core", "FlightPlanner.Core\FlightPlanner.Core.csproj", "{FB655620-989C-4287-8DA1-1DEEE039F3E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightPlanner.Data", "FlightPlanner.Data\FlightPlanner.Data.csproj", "{97620B2D-B5E8-4FBF-9DF3-78CCF7C62649}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightPlanner.Services", "FlightPlanner.Services\FlightPlanner.Services.csproj", "{ED09A365-6463-456F-BCDA-379F9AA583F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,18 @@ Global
 		{C0EB3927-86AB-4A6C-B31B-DF8FE830EF50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0EB3927-86AB-4A6C-B31B-DF8FE830EF50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0EB3927-86AB-4A6C-B31B-DF8FE830EF50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB655620-989C-4287-8DA1-1DEEE039F3E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB655620-989C-4287-8DA1-1DEEE039F3E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB655620-989C-4287-8DA1-1DEEE039F3E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB655620-989C-4287-8DA1-1DEEE039F3E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97620B2D-B5E8-4FBF-9DF3-78CCF7C62649}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97620B2D-B5E8-4FBF-9DF3-78CCF7C62649}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97620B2D-B5E8-4FBF-9DF3-78CCF7C62649}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97620B2D-B5E8-4FBF-9DF3-78CCF7C62649}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED09A365-6463-456F-BCDA-379F9AA583F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED09A365-6463-456F-BCDA-379F9AA583F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED09A365-6463-456F-BCDA-379F9AA583F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED09A365-6463-456F-BCDA-379F9AA583F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
