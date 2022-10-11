@@ -1,6 +1,6 @@
-﻿using FlightPlanner.Core.Models;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+using FlightPlanner.Core.Models;
 using System.Threading.Tasks;
 
 namespace FlightPlanner.Data

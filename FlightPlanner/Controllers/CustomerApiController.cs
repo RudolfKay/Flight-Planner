@@ -1,9 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
+﻿using FlightPlanner.Core.Services;
 using FlightPlanner.Core.Models;
-using FlightPlanner.Core.Services;
-using FlightPlanner.Core.Validations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FlightPlanner.Controllers
 {
@@ -12,12 +9,10 @@ namespace FlightPlanner.Controllers
     public class CustomerApiController : ControllerBase
     {
         private readonly IFlightService _flightService;
-        private readonly IFlightValidator _flightValidator;
 
         public CustomerApiController(IFlightService flightService)
         {
             _flightService = flightService;
-            _flightValidator = new FlightValidator();
         }
 
         [Route("airports")]

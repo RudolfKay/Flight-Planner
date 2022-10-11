@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using FlightPlanner.Core.Services;
-using FlightPlanner.Core.Models;
 using System.Collections.Generic;
-using System.Linq;
+using FlightPlanner.Core.Models;
 using FlightPlanner.Data;
+using System.Linq;
 
 namespace FlightPlanner.Services
 {

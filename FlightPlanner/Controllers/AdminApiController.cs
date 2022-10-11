@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using FlightPlanner.Core.Validations;
 using FlightPlanner.Core.Services;
 using FlightPlanner.Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using FlightPlanner.Core.Validations;
 
 namespace FlightPlanner.Controllers
 {
@@ -37,13 +37,13 @@ namespace FlightPlanner.Controllers
         [HttpPut]
         public IActionResult PutFlight(Flight flight)
         {
-            if (_flightValidator.IsFlightValid(flight))
+            if (!_flightValidator.IsFlightValid(flight))
             {
                 return BadRequest(); //400
             }
 
-            if (!_flightService.Exists(flight) ||
-                _flightService.GetCompleteFlightById(flight.Id) != null)
+            if (_flightService.GetCompleteFlightById(flight.Id) != null ||
+                _flightService.Exists(flight))
             {
                 return Conflict(); //409
             }

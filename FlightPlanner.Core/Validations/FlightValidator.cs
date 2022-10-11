@@ -7,6 +7,11 @@ namespace FlightPlanner.Core.Validations
     {
         public bool IsFlightValid(Flight flight)
         {
+            if (flight == null)
+            {
+                return false;
+            }
+
             //Isn't null or empty
             if (flight.From == null || flight.To == null || string.IsNullOrEmpty(flight.Carrier) ||
                 string.IsNullOrEmpty(flight.DepartureTime) || string.IsNullOrEmpty(flight.ArrivalTime))
@@ -14,14 +19,14 @@ namespace FlightPlanner.Core.Validations
                 return false;
             }
 
-            if (string.IsNullOrEmpty(flight.From.Country) || string.IsNullOrEmpty(flight.From.City) || string.IsNullOrEmpty(flight.From.AirPortCode) ||
+            else if (string.IsNullOrEmpty(flight.From.Country) || string.IsNullOrEmpty(flight.From.City) || string.IsNullOrEmpty(flight.From.AirPortCode) ||
                 string.IsNullOrEmpty(flight.To.Country) || string.IsNullOrEmpty(flight.To.City) || string.IsNullOrEmpty(flight.To.AirPortCode))
             {
                 return false;
             }
 
-            //Flight airports valid - not the same
-            if (flight.From.Country.ToLower().Trim() == flight.To.Country.ToLower().Trim() &&
+            //Flight airports valid & not the same
+            else if (flight.From.Country.ToLower().Trim() == flight.To.Country.ToLower().Trim() &&
                 flight.From.City.ToLower().Trim() == flight.To.City.ToLower().Trim() &&
                 flight.From.AirPortCode.ToLower().Trim() == flight.To.AirPortCode.ToLower().Trim())
             {
@@ -29,7 +34,7 @@ namespace FlightPlanner.Core.Validations
             }
 
             //Arrival is later than departure
-            if (!string.IsNullOrEmpty(flight?.ArrivalTime) &&
+            else if (!string.IsNullOrEmpty(flight?.ArrivalTime) &&
                 !string.IsNullOrEmpty(flight?.DepartureTime))
             {
                 var arrival = DateTime.Parse(flight.ArrivalTime);

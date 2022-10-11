@@ -1,9 +1,8 @@
-﻿using FlightPlanner.Core.Models;
-using FlightPlanner.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using FlightPlanner.Core.Models;
 using System.Threading.Tasks;
 
-namespace FlightPlanner
+namespace FlightPlanner.Data
 {
     public class FlightPlannerDbContext : DbContext, IFlightPlannerDbContext
     {

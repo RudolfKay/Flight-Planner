@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using FlightPlanner.Core.Services;
-using FlightPlanner.Core.Models;
-using System.Linq;
-using FlightPlanner.Data;
 using System.Collections.Generic;
+using FlightPlanner.Core.Models;
+using FlightPlanner.Data;
+using System.Linq;
 
 namespace FlightPlanner.Services
 {
@@ -30,6 +30,8 @@ namespace FlightPlanner.Services
 
         public bool Exists(Flight flight)
         {
+            if (flight == null) return false;
+
             return _context.Flights.Any(f => f.ArrivalTime == flight.ArrivalTime
             && f.DepartureTime == flight.DepartureTime
             && f.Carrier == flight.Carrier
