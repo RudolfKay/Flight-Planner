@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FlightPlanner.Core.Models;
+using AutoMapper;
 
 namespace FlightPlanner.Core.Services
 {
@@ -11,8 +12,8 @@ namespace FlightPlanner.Core.Services
 
         bool Exists(Flight flight);
 
-        Airport SearchForAirport(List<Flight> flights, string search);
+        Airport SearchForAirport(List<Flight> flights, string search, IMapper mapper);
 
-        PageResult SearchForFlight(SearchFlightsRequest req, List<Flight> flights);
+        PageResult SearchForFlight(SearchFlightsRequest req, List<Flight> flights, IMapper mapper);
     }
 }

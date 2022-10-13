@@ -12,6 +12,7 @@ using FlightPlanner.Services;
 using FlightPlanner.Core.Models;
 using FlightPlanner.Core.Validations;
 using FlightPlanner.Data;
+using AutoMapper;
 
 namespace FlightPlanner
 {
@@ -47,7 +48,7 @@ namespace FlightPlanner
             services.AddScoped<IEntityService<Airport>, EntityService<Airport>>();
             services.AddScoped<IFlightService, FlightService>();
             services.AddScoped<IFlightValidator, FlightValidator>();
-            services.AddScoped<IAirportValidator, AirportValidator>();
+            services.AddSingleton<IMapper>(AutoMapperConfig.CreateMapper());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

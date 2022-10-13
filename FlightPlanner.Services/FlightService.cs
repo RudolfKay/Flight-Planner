@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using FlightPlanner.Core.Models;
 using FlightPlanner.Data;
 using System.Linq;
+using AutoMapper;
 
 namespace FlightPlanner.Services
 {
@@ -39,7 +40,7 @@ namespace FlightPlanner.Services
             && f.To.AirPortCode == flight.To.AirPortCode);
         }
 
-        public Airport SearchForAirport(List<Flight> flights, string search)
+        public Airport SearchForAirport(List<Flight> flights, string search, IMapper mapper)
         {
             var searchFor = search.ToLower().Trim();
 
@@ -66,7 +67,7 @@ namespace FlightPlanner.Services
             return null;
         }
 
-        public PageResult SearchForFlight(SearchFlightsRequest req, List<Flight> flights)
+        public PageResult SearchForFlight(SearchFlightsRequest req, List<Flight> flights, IMapper mapper)
         {
             PageResult pr = new();
 

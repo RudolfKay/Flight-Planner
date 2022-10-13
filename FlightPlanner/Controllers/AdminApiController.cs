@@ -3,6 +3,8 @@ using FlightPlanner.Core.Validations;
 using FlightPlanner.Core.Services;
 using FlightPlanner.Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using FlightPlanner.Models;
+using AutoMapper;
 
 namespace FlightPlanner.Controllers
 {
@@ -12,11 +14,15 @@ namespace FlightPlanner.Controllers
     {
         private readonly IFlightService _flightService;
         private readonly IFlightValidator _flightValidator;
+        private readonly IMapper _mapper;
 
-        public AdminApiController(IFlightService flightService, IFlightValidator flightValidator)
+        public AdminApiController(IFlightService flightService,
+            IFlightValidator flightValidator,
+            IMapper mapper)
         {
             _flightService = flightService;
             _flightValidator = flightValidator;
+            _mapper = mapper;
         }
 
         [Route("flights/{id}")]
@@ -30,13 +36,17 @@ namespace FlightPlanner.Controllers
                 return NotFound(); //404
             }
             
-            return Ok(flight); //200
+            var response = _mapper.Map<FlightRequest>(flight);
+
+            return Ok(response); //200
         }
 
         [Route("flights")]
         [HttpPut]
-        public IActionResult PutFlight(Flight flight)
+        public IActionResult PutFlight(FlightRequest request)
         {
+            var flight = _mapper.Map<Flight>(request);
+
             if (!_flightValidator.IsFlightValid(flight))
             {
                 return BadRequest(); //400
@@ -49,8 +59,9 @@ namespace FlightPlanner.Controllers
             }
 
             _flightService.Create(flight);
+            request = _mapper.Map<FlightRequest>(flight);
 
-            return Created("",flight); //201
+            return Created("",request); //201
         }
 
         [Route("flights/{id}")]

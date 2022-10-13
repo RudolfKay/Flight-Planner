@@ -1,6 +1,7 @@
 ﻿using FlightPlanner.Core.Services;
 using FlightPlanner.Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 
 namespace FlightPlanner.Controllers
 {
@@ -9,10 +10,12 @@ namespace FlightPlanner.Controllers
     public class CustomerApiController : ControllerBase
     {
         private readonly IFlightService _flightService;
+        private readonly IMapper _mapper;
 
-        public CustomerApiController(IFlightService flightService)
+        public CustomerApiController(IFlightService flightService, IMapper mapper)
         {
             _flightService = flightService;
+            _mapper = mapper;
         }
 
         [Route("airports")]
@@ -20,7 +23,7 @@ namespace FlightPlanner.Controllers
         public IActionResult SearchAirports(string search)
         {
             var flights = _flightService.GetAll();
-            var airport = _flightService.SearchForAirport(flights, search);
+            var airport = _flightService.SearchForAirport(flights, search, _mapper);
 
             if (airport == null)
             {
@@ -35,8 +38,7 @@ namespace FlightPlanner.Controllers
         public IActionResult SearchFlights(SearchFlightsRequest req)
         {
             var flights = _flightService.GetAll();
-
-            var pageResult = _flightService.SearchForFlight(req, flights);
+            var pageResult = _flightService.SearchForFlight(req, flights, _mapper);
 
             if (pageResult == null)
             {

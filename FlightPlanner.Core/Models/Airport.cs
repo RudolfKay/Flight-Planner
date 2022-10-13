@@ -8,7 +8,7 @@ namespace FlightPlanner.Core.Models
 
         public string City { get; set; }
 
-        [JsonPropertyName("airport")]
+        //[JsonPropertyName("airport")]
         public string AirPortCode { get; set; }
     }
 }
