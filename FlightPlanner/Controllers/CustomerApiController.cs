@@ -23,6 +23,12 @@ namespace FlightPlanner.Controllers
         public IActionResult SearchAirports(string search)
         {
             var flights = _flightService.GetAll();
+
+            if (flights.Count <= 0)
+            {
+                return NotFound();
+            }
+
             var airport = _flightService.SearchForAirport(flights, search, _mapper);
 
             if (airport == null)
@@ -38,6 +44,11 @@ namespace FlightPlanner.Controllers
         public IActionResult SearchFlights(SearchFlightsRequest req)
         {
             var flights = _flightService.GetAll();
+
+            if (flights.Count <= 0)
+            {
+                return NotFound();
+            }
             var pageResult = _flightService.SearchForFlight(req, flights, _mapper);
 
             if (pageResult == null)

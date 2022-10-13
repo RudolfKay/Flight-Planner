@@ -46,19 +46,21 @@ namespace FlightPlanner.Services
 
             foreach (Flight f in flights)
             {
-                if (f.From.Country.ToLower().Trim().Contains(searchFor) ||
-                    f.From.City.ToLower().Trim().Contains(searchFor) ||
-                    f.From.AirPortCode.ToLower().Trim().Contains(searchFor))
+                var flight = mapper.Map<Flight>(f);
+
+                if (flight.From.Country.ToLower().Trim().Contains(searchFor) ||
+                    flight.From.City.ToLower().Trim().Contains(searchFor) ||
+                    flight.From.AirPortCode.ToLower().Trim().Contains(searchFor))
                 {
-                    Airport airport = f.From;
+                    Airport airport = flight.From;
 
                     return airport;
                 }
-                if (f.To.Country.ToLower().Trim().Contains(searchFor) ||
-                    f.To.City.ToLower().Trim().Contains(searchFor) ||
-                    f.To.AirPortCode.ToLower().Trim().Contains(searchFor))
+                if (flight.To.Country.ToLower().Trim().Contains(searchFor) ||
+                    flight.To.City.ToLower().Trim().Contains(searchFor) ||
+                    flight.To.AirPortCode.ToLower().Trim().Contains(searchFor))
                 {
-                    Airport airport = f.To;
+                    Airport airport = flight.To;
 
                     return airport;
                 }
@@ -81,9 +83,11 @@ namespace FlightPlanner.Services
 
             foreach (Flight f in flights)
             {
+                var flight = mapper.Map<Flight>(f);
+
                 if (
-                    f.From.AirPortCode.ToLower().Trim().Equals(airportFrom) &&
-                    f.To.AirPortCode.ToLower().Trim().Equals(airportTo))
+                    flight.From.AirPortCode.ToLower().Trim().Equals(airportFrom) &&
+                    flight.To.AirPortCode.ToLower().Trim().Equals(airportTo))
                 {
                     pr.Items.Add(f);
                     pr.TotalItems++;
