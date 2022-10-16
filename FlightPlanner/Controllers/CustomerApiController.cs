@@ -2,6 +2,7 @@
 using FlightPlanner.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using FlightPlanner.Models;
 
 namespace FlightPlanner.Controllers
 {
@@ -22,34 +23,23 @@ namespace FlightPlanner.Controllers
         [HttpGet]
         public IActionResult SearchAirports(string search)
         {
-            var flights = _flightService.GetAll();
-
-            if (flights.Count <= 0)
-            {
-                return NotFound();
-            }
-
-            var airport = _flightService.SearchForAirport(flights, search, _mapper);
+            var airport = _flightService.SearchForAirport(search);
 
             if (airport == null)
             {
                 return NotFound();
             }
 
-            return Ok(new []{airport});
+            var request = _mapper.Map<AirportRequest>(airport);
+
+            return Ok(new []{request});
         }
 
         [Route("flights/search")]
         [HttpPost]
         public IActionResult SearchFlights(SearchFlightsRequest req)
         {
-            var flights = _flightService.GetAll();
-
-            if (flights.Count <= 0)
-            {
-                return NotFound();
-            }
-            var pageResult = _flightService.SearchForFlight(req, flights, _mapper);
+            var pageResult = _flightService.SearchForFlight(req);
 
             if (pageResult == null)
             {
@@ -65,12 +55,14 @@ namespace FlightPlanner.Controllers
         {
             Flight flight = _flightService.GetCompleteFlightById(id);
 
-            if (flight != null)
+            if (flight == null)
             {
-                return Ok(flight);
+                return NotFound();
             }
 
-            return BadRequest();
+            var response = _mapper.Map<FlightRequest>(flight);
+
+            return Ok(response);
         }
     }
 }

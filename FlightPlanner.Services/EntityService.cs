@@ -1,8 +1,8 @@
 ﻿using FlightPlanner.Core.Services;
 using System.Collections.Generic;
 using FlightPlanner.Core.Models;
-using System.Linq;
 using FlightPlanner.Data;
+using System.Linq;
 
 namespace FlightPlanner.Services
 {
@@ -12,19 +12,19 @@ namespace FlightPlanner.Services
         {
         }
 
-        public void Create(T entity)
+        public ServiceResult Create(T entity)
         {
-            Create<T>(entity);
+            return Create<T>(entity);
         }
 
-        public void Delete(T entity)
+        public ServiceResult Delete(T entity)
         {
-            Delete<T>(entity);
+            return Delete<T>(entity);
         }
 
-        public void Update(T entity)
+        public ServiceResult Update(T entity)
         {
-            Update<T>(entity);
+            return Update<T>(entity);
         }
 
         public List<T> GetAll()

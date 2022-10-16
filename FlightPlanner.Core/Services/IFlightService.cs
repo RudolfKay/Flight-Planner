@@ -12,8 +12,8 @@ namespace FlightPlanner.Core.Services
 
         bool Exists(Flight flight);
 
-        Airport SearchForAirport(List<Flight> flights, string search, IMapper mapper);
+        Airport SearchForAirport(string search);
 
-        PageResult SearchForFlight(SearchFlightsRequest req, List<Flight> flights, IMapper mapper);
+        PageResult SearchForFlight(SearchFlightsRequest req);
     }
 }

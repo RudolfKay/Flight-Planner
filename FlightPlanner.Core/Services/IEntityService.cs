@@ -6,11 +6,11 @@ namespace FlightPlanner.Core.Services
 {
     public interface IEntityService<T> where T : Entity
     {
-        void Create(T entity);
+        ServiceResult Create(T entity);
 
-        void Delete(T entity);
+        ServiceResult Delete(T entity);
 
-        void Update(T entity);
+        ServiceResult Update(T entity);
 
         List<T> GetAll();
 

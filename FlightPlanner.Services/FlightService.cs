@@ -40,27 +40,17 @@ namespace FlightPlanner.Services
             && f.To.AirPortCode == flight.To.AirPortCode);
         }
 
-        public Airport SearchForAirport(List<Flight> flights, string search, IMapper mapper)
+        public Airport SearchForAirport(string search)
         {
             var searchFor = search.ToLower().Trim();
 
-            foreach (Flight f in flights)
+            foreach (Airport a in _context.Airports)
             {
-                var flight = mapper.Map<Flight>(f);
-
-                if (flight.From.Country.ToLower().Trim().Contains(searchFor) ||
-                    flight.From.City.ToLower().Trim().Contains(searchFor) ||
-                    flight.From.AirPortCode.ToLower().Trim().Contains(searchFor))
+                if (a.Country.ToLower().Trim().Contains(searchFor) ||
+                    a.City.ToLower().Trim().Contains(searchFor) ||
+                    a.AirPortCode.ToLower().Trim().Contains(searchFor))
                 {
-                    Airport airport = flight.From;
-
-                    return airport;
-                }
-                if (flight.To.Country.ToLower().Trim().Contains(searchFor) ||
-                    flight.To.City.ToLower().Trim().Contains(searchFor) ||
-                    flight.To.AirPortCode.ToLower().Trim().Contains(searchFor))
-                {
-                    Airport airport = flight.To;
+                    Airport airport = a;
 
                     return airport;
                 }
@@ -69,7 +59,7 @@ namespace FlightPlanner.Services
             return null;
         }
 
-        public PageResult SearchForFlight(SearchFlightsRequest req, List<Flight> flights, IMapper mapper)
+        public PageResult SearchForFlight(SearchFlightsRequest req)
         {
             PageResult pr = new();
 
@@ -81,13 +71,10 @@ namespace FlightPlanner.Services
             var airportFrom = req.From.ToLower().Trim();
             var airportTo = req.To.ToLower().Trim();
 
-            foreach (Flight f in flights)
+            foreach (Flight f in _context.Flights)
             {
-                var flight = mapper.Map<Flight>(f);
-
-                if (
-                    flight.From.AirPortCode.ToLower().Trim().Equals(airportFrom) &&
-                    flight.To.AirPortCode.ToLower().Trim().Equals(airportTo))
+                if (f.From.AirPortCode.ToLower().Trim().Equals(airportFrom) &&
+                    f.To.AirPortCode.ToLower().Trim().Equals(airportTo))
                 {
                     pr.Items.Add(f);
                     pr.TotalItems++;
