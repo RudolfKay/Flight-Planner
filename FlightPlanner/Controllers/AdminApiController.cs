@@ -12,6 +12,7 @@ namespace FlightPlanner.Controllers
     [ApiController, Authorize]
     public class AdminApiController : ControllerBase
     {
+        private static readonly object taskLock = new();
         private readonly IFlightService _flightService;
         private readonly IFlightValidator _flightValidator;
         private readonly IMapper _mapper;
@@ -45,29 +46,32 @@ namespace FlightPlanner.Controllers
         [HttpPut]
         public IActionResult PutFlight(FlightRequest request)
         {
-            var flight = _mapper.Map<Flight>(request);
-
-            if (!_flightValidator.IsFlightValid(flight))
+            lock (taskLock)
             {
+                var flight = _mapper.Map<Flight>(request);
+
+                if (!_flightValidator.IsFlightValid(flight))
+                {
                 return BadRequest(); //400
+                }
+
+                if (_flightService.GetCompleteFlightById(flight.Id) != null ||
+                    _flightService.Exists(flight))
+                {
+                    return Conflict(); //409
+                }
+
+                var result = _flightService.Create(flight);
+
+                if (result.Success)
+                {
+                    request = _mapper.Map<FlightRequest>(flight);
+
+                    return Created("",request); //201
+                }
+
+                return Problem(result.FormattedErrors);
             }
-
-            if (_flightService.GetCompleteFlightById(flight.Id) != null ||
-                _flightService.Exists(flight))
-            {
-                return Conflict(); //409
-            }
-
-            var result = _flightService.Create(flight);
-
-            if (result.Success)
-            {
-                request = _mapper.Map<FlightRequest>(flight);
-
-                return Created("",request); //201
-            }
-
-            return Problem(result.FormattedErrors);
         }
 
         [Route("flights/{id}")]

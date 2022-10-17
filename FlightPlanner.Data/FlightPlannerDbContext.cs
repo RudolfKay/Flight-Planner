@@ -8,7 +8,6 @@ namespace FlightPlanner.Data
     {
         public FlightPlannerDbContext(DbContextOptions options): base(options)
         {
-
         }
 
         public DbSet<Flight> Flights { get; set; }

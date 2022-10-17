@@ -1,8 +1,8 @@
 ﻿using FlightPlanner.Core.Services;
 using FlightPlanner.Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 using FlightPlanner.Models;
+using AutoMapper;
 
 namespace FlightPlanner.Controllers
 {
@@ -10,6 +10,7 @@ namespace FlightPlanner.Controllers
     [ApiController]
     public class CustomerApiController : ControllerBase
     {
+        private static readonly object taskLock = new(); 
         private readonly IFlightService _flightService;
         private readonly IMapper _mapper;
 
@@ -39,14 +40,17 @@ namespace FlightPlanner.Controllers
         [HttpPost]
         public IActionResult SearchFlights(SearchFlightsRequest req)
         {
-            var pageResult = _flightService.SearchForFlight(req);
-
-            if (pageResult == null)
+            lock (taskLock)
             {
-                return BadRequest();
-            }
+                var pageResult = _flightService.SearchForFlight(req);
 
-            return Ok(pageResult);
+                if (pageResult == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(pageResult); 
+            }
         }
     
         [Route("flights/{id}")]

@@ -18,6 +18,7 @@ namespace FlightPlanner.Services
         {
             _context.Flights.RemoveRange(_context.Flights);
             _context.Airports.RemoveRange(_context.Airports);
+
             _context.SaveChanges();
         }
 
@@ -68,18 +69,15 @@ namespace FlightPlanner.Services
                 return null;
             }
 
-            var airportFrom = req.From.ToLower().Trim();
-            var airportTo = req.To.ToLower().Trim();
+            var flights = _context.Flights
+                    .Include(f => f.From)
+                    .Include(f => f.To)
+                    .ToList()
+                    .Where(f => f.From.AirPortCode.Equals(req.From) && f.To.AirPortCode.Equals(req.To))
+                    .ToArray();
 
-            foreach (Flight f in _context.Flights)
-            {
-                if (f.From.AirPortCode.ToLower().Trim().Equals(airportFrom) &&
-                    f.To.AirPortCode.ToLower().Trim().Equals(airportTo))
-                {
-                    pr.Items.Add(f);
-                    pr.TotalItems++;
-                }
-            }
+            pr.Items = flights;
+            pr.TotalItems = flights.Length;
 
             return pr;
         }
