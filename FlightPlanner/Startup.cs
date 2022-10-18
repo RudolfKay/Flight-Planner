@@ -48,7 +48,9 @@ namespace FlightPlanner
             services.AddScoped<IEntityService<Airport>, EntityService<Airport>>();
             services.AddScoped<IEntityService<User>, EntityService<User>>();
             services.AddScoped<IFlightService, FlightService>();
+            services.AddScoped<IAirportService, AirportService>();
             services.AddScoped<IFlightValidator, FlightValidator>();
+            services.AddScoped<ISearchFlightValidator, SearchFlightValidator>();
             services.AddSingleton<IMapper>(AutoMapperConfig.CreateMapper());
         }
 

@@ -1,5 +1,4 @@
 ﻿using FlightPlanner.Core.Services;
-using FlightPlanner.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightPlanner.Controllers
@@ -9,17 +8,20 @@ namespace FlightPlanner.Controllers
     public class TestingApiController : ControllerBase
     {
         private readonly IFlightService _flightService;
+        private readonly IAirportService _airportService;
 
-        public TestingApiController(IFlightService flightService)
+        public TestingApiController(IFlightService flightService, IAirportService airportService)
         {
             _flightService = flightService;
+            _airportService = airportService;
         }
 
         [HttpPost]
         [Route("clear")]
         public IActionResult Clear()
         {
-            _flightService.ClearData();
+            _flightService.ClearFlights();
+            _airportService.ClearAirports();
 
             return Ok();
         }

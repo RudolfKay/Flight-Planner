@@ -1,23 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FlightPlanner.Core.Validations;
+using Microsoft.EntityFrameworkCore;
 using FlightPlanner.Core.Services;
-using System.Collections.Generic;
 using FlightPlanner.Core.Models;
 using FlightPlanner.Data;
 using System.Linq;
-using AutoMapper;
 
 namespace FlightPlanner.Services
 {
     public class FlightService : EntityService<Flight>, IFlightService
     {
+        private readonly ISearchFlightValidator _validator;
+
         public FlightService(IFlightPlannerDbContext context) : base(context)
         {
+            _validator = new SearchFlightValidator();
         }
 
-        public void ClearData()
+        public void ClearFlights()
         {
             _context.Flights.RemoveRange(_context.Flights);
-            _context.Airports.RemoveRange(_context.Airports);
 
             _context.SaveChanges();
         }
@@ -41,30 +42,11 @@ namespace FlightPlanner.Services
             && f.To.AirPortCode == flight.To.AirPortCode);
         }
 
-        public Airport SearchForAirport(string search)
-        {
-            var searchFor = search.ToLower().Trim();
-
-            foreach (Airport a in _context.Airports)
-            {
-                if (a.Country.ToLower().Trim().Contains(searchFor) ||
-                    a.City.ToLower().Trim().Contains(searchFor) ||
-                    a.AirPortCode.ToLower().Trim().Contains(searchFor))
-                {
-                    Airport airport = a;
-
-                    return airport;
-                }
-            }
-
-            return null;
-        }
-
         public PageResult SearchForFlight(SearchFlightsRequest req)
         {
-            PageResult pr = new();
+            var validation = _validator.IsFlightSearchRequestValid(req);
 
-            if (IsFlightSearchRequestValid(req) == null)
+            if (validation == null)
             {
                 return null;
             }
@@ -76,24 +58,14 @@ namespace FlightPlanner.Services
                     .Where(f => f.From.AirPortCode.Equals(req.From) && f.To.AirPortCode.Equals(req.To))
                     .ToArray();
 
-            pr.Items = flights;
-            pr.TotalItems = flights.Length;
-
-            return pr;
-        }
-
-        public static SearchFlightsRequest IsFlightSearchRequestValid(SearchFlightsRequest req)
-        {
-            if (req == null ||
-                string.IsNullOrEmpty(req.From) ||
-                string.IsNullOrEmpty(req.To) ||
-                req.From == req.To)
+            PageResult result = new()
             {
-                return null;
-            }
+                Page = 0,
+                TotalItems = flights.Length,
+                Items = flights,
+            };
 
-            return req;
+            return result;
         }
-
     }
 }

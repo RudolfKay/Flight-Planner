@@ -1,19 +1,15 @@
-﻿using System.Collections.Generic;
-using FlightPlanner.Core.Models;
-using AutoMapper;
+﻿using FlightPlanner.Core.Models;
 
 namespace FlightPlanner.Core.Services
 {
     public interface IFlightService : IEntityService<Flight>
     {
-        void ClearData();
+        void ClearFlights();
 
         Flight GetCompleteFlightById(int id);
 
         bool Exists(Flight flight);
 
-        Airport SearchForAirport(string search);
-
-        PageResult SearchForFlight(SearchFlightsRequest req);
+        public PageResult SearchForFlight(SearchFlightsRequest req);
     }
 }

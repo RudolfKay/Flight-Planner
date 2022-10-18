@@ -12,11 +12,13 @@ namespace FlightPlanner.Controllers
     {
         private static readonly object taskLock = new(); 
         private readonly IFlightService _flightService;
+        private readonly IAirportService _airportService;
         private readonly IMapper _mapper;
 
-        public CustomerApiController(IFlightService flightService, IMapper mapper)
+        public CustomerApiController(IFlightService flightService, IAirportService airportService, IMapper mapper)
         {
             _flightService = flightService;
+            _airportService = airportService;
             _mapper = mapper;
         }
 
@@ -24,7 +26,7 @@ namespace FlightPlanner.Controllers
         [HttpGet]
         public IActionResult SearchAirports(string search)
         {
-            var airport = _flightService.SearchForAirport(search);
+            var airport = _airportService.SearchForAirport(search);
 
             if (airport == null)
             {

@@ -50,15 +50,6 @@ namespace FlightPlanner.Filters
                 var username = credentials[0];
                 var password = credentials[1];
 
-                /*var password = Convert.ToBase64String(
-                    Encoding.UTF8.GetBytes(
-                        credentials[1].ToCharArray()
-                        )
-                    );
-                */
-                
-                //authorized = _userService.Query().Any(u => u.Username == username && u.Password == password); 
-
                 authorized = (username == "codelex-admin" && password == "Password123");
             }
             catch
