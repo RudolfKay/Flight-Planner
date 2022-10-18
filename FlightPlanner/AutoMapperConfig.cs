@@ -1,14 +1,16 @@
 ﻿using FlightPlanner.Core.Models;
 using FlightPlanner.Models;
 using AutoMapper;
+using System;
 
 namespace FlightPlanner
 {
     public class AutoMapperConfig
     {
-
         public static IMapper CreateMapper()
         {
+            bool isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+
             var config = new MapperConfiguration
                 (cfg => {cfg.CreateMap<AirportRequest, Airport>().
                     ForMember(d => d.Id, options => options.Ignore()).
@@ -19,8 +21,10 @@ namespace FlightPlanner
                 cfg.CreateMap<Flight, FlightRequest>();
                 });
 
-            //only in development, not for final product. Checks if config is valid 1:1
-            config.AssertConfigurationIsValid();
+            if (isDevelopment)
+            {
+                config.AssertConfigurationIsValid();
+            }
 
             return config.CreateMapper();
         }
