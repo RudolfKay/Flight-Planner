@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using System;
 
@@ -6,27 +7,82 @@ namespace FlightPlanner
 {
     public class FlightStorage
     {
-        private static readonly List<Flight> _flights = new();
-        private static int _id = 0;
-
-        public static Flight AddFlight(Flight flight)
+        public Flight GetFlight(int id, FlightPlannerDbContext _context)
         {
-            flight.Id = ++_id;
-            _flights.Add(flight);
+            return _context.Flights.
+                Include(f => f.From).
+                Include(f => f.To).
+                FirstOrDefault(f => f.Id == id);
+        }
+
+        public Flight IsFlightNullOrEmpty(Flight flight)
+        {
+            if (flight.From == null || flight.To == null || string.IsNullOrEmpty(flight.Carrier) ||
+                string.IsNullOrEmpty(flight.DepartureTime) || string.IsNullOrEmpty(flight.ArrivalTime))
+            {
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(flight.From.Country) || string.IsNullOrEmpty(flight.From.City) || string.IsNullOrEmpty(flight.From.AirPortCode) ||
+                string.IsNullOrEmpty(flight.To.Country) || string.IsNullOrEmpty(flight.To.City) || string.IsNullOrEmpty(flight.To.AirPortCode))
+            {
+                return null;
+            }
 
             return flight;
         }
 
-        public static Flight GetFlight(int id)
+        public Flight IsAirportValid(Flight flight)
         {
-            return _flights.FirstOrDefault(f => f.Id == id);
+            if (flight.From.Country.ToLower().Trim() == flight.To.Country.ToLower().Trim() &&
+                flight.From.City.ToLower().Trim() == flight.To.City.ToLower().Trim() &&
+                flight.From.AirPortCode.ToLower().Trim() == flight.To.AirPortCode.ToLower().Trim())
+            {
+                return null;
+            }
+
+            return flight;
         }
 
-        public static Airport SearchForAirport(string search)
+        public Flight IsFlightValid(List<Flight> flights, Flight flight)
+        {
+            foreach (Flight f in flights)
+            {
+                if (flight.From.Country.ToLower().Trim() == f.From.Country.ToLower().Trim() &&
+                    flight.From.City.ToLower().Trim() == f.From.City.ToLower().Trim() &&
+                    flight.From.AirPortCode.ToLower().Trim() == f.From.AirPortCode.ToLower().Trim() &&
+                    flight.To.Country.ToLower().Trim() == f.To.Country.ToLower().Trim() &&
+                    flight.To.City.ToLower().Trim() == f.To.City.ToLower().Trim() &&
+                    flight.To.AirPortCode.ToLower().Trim() == f.To.AirPortCode.ToLower().Trim() &&
+                    flight.Carrier.ToLower().Trim() == f.Carrier.ToLower().Trim() &&
+                    flight.DepartureTime.ToLower().Trim() == f.DepartureTime.ToLower().Trim() &&
+                    flight.ArrivalTime.ToLower().Trim() == f.ArrivalTime.ToLower().Trim())
+                {
+                    return null;
+                }
+            }
+
+            return flight;
+        }
+
+        public Flight IsTimeValid(Flight flight)
+        {
+            var departure = DateTime.Parse(flight.DepartureTime);
+            var arrival = DateTime.Parse(flight.ArrivalTime);
+
+            if (departure >= arrival)
+            {
+                return null;
+            }
+
+            return flight;
+        }
+
+        public Airport SearchForAirport(List<Flight> flights, string search)
         {
             var searchFor = search.ToLower().Trim();
 
-            foreach (Flight f in _flights)
+            foreach (Flight f in flights)
             {
                 if (f.From.Country.ToLower().Trim().Contains(searchFor) ||
                     f.From.City.ToLower().Trim().Contains(searchFor) ||
@@ -49,75 +105,7 @@ namespace FlightPlanner
             return null;
         }
 
-        public static void DeleteFlight(Flight flight)
-        {
-            _flights.Remove(flight);
-        }
-
-        public static Flight IsFlightNullOrEmpty(Flight flight)
-        {
-            if (flight.From == null || flight.To == null || string.IsNullOrEmpty(flight.Carrier) ||
-                string.IsNullOrEmpty(flight.DepartureTime) || string.IsNullOrEmpty(flight.ArrivalTime))
-            {
-                return null;
-            }
-
-            if (string.IsNullOrEmpty(flight.From.Country) || string.IsNullOrEmpty(flight.From.City) || string.IsNullOrEmpty(flight.From.AirPortCode) ||
-                string.IsNullOrEmpty(flight.To.Country) || string.IsNullOrEmpty(flight.To.City) || string.IsNullOrEmpty(flight.To.AirPortCode))
-            {
-                return null;
-            }
-
-            return flight;
-        }
-
-        public static Flight IsAirportValid(Flight flight)
-        {
-            if (flight.From.Country.ToLower().Trim() == flight.To.Country.ToLower().Trim() &&
-                flight.From.City.ToLower().Trim() == flight.To.City.ToLower().Trim() &&
-                flight.From.AirPortCode.ToLower().Trim() == flight.To.AirPortCode.ToLower().Trim())
-            {
-                return null;
-            }
-
-            return flight;
-        }
-
-        public static Flight IsFlightValid(Flight flight)
-        {
-            foreach (Flight temp in _flights)
-            {
-                if (flight.From.Country.ToLower().Trim() == temp.From.Country.ToLower().Trim() &&
-                    flight.From.City.ToLower().Trim() == temp.From.City.ToLower().Trim() &&
-                    flight.From.AirPortCode.ToLower().Trim() == temp.From.AirPortCode.ToLower().Trim() &&
-                    flight.To.Country.ToLower().Trim() == temp.To.Country.ToLower().Trim() &&
-                    flight.To.City.ToLower().Trim() == temp.To.City.ToLower().Trim() &&
-                    flight.To.AirPortCode.ToLower().Trim() == temp.To.AirPortCode.ToLower().Trim() &&
-                    flight.Carrier.ToLower().Trim() == temp.Carrier.ToLower().Trim() &&
-                    flight.DepartureTime.ToLower().Trim() == temp.DepartureTime.ToLower().Trim() &&
-                    flight.ArrivalTime.ToLower().Trim() == temp.ArrivalTime.ToLower().Trim())
-                {
-                    return null;
-                }
-            }
-
-            return flight;
-        }
-
-        public static Flight IsTimeValid(Flight flight)
-        {
-            var departure = DateTime.Parse(flight.DepartureTime);
-            var arrival = DateTime.Parse(flight.ArrivalTime);
-
-            if (departure >= arrival)
-            {
-                return null;
-            }
-
-            return flight;
-        }
-
-        public static PageResult SearchForFlight(SearchFlightsRequest req)
+        public PageResult SearchForFlight(SearchFlightsRequest req, List<Flight> flights)
         {
             PageResult pr = new();
 
@@ -129,7 +117,7 @@ namespace FlightPlanner
             var airportFrom = req.From.ToLower().Trim();
             var airportTo = req.To.ToLower().Trim();
 
-            foreach (Flight f in _flights)
+            foreach (Flight f in flights)
             {
                 if (
                     f.From.AirPortCode.ToLower().Trim().Equals(airportFrom) &&
@@ -154,12 +142,6 @@ namespace FlightPlanner
             }
 
             return req;
-        }
-
-        public static void Clear()
-        {
-            _flights.Clear();
-            _id = 0;
         }
     }
 }

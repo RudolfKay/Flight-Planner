@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace FlightPlanner.Controllers
 {
@@ -6,13 +8,26 @@ namespace FlightPlanner.Controllers
     [ApiController]
     public class CustomerApiController : ControllerBase
     {
-        private static readonly object taskLock = new object();
+        private readonly FlightPlannerDbContext _context;
+        private static readonly object taskLock = new();
+        private readonly FlightStorage _flightStorage;
+
+        public CustomerApiController(FlightPlannerDbContext context)
+        {
+            _context = context;
+            _flightStorage = new FlightStorage();
+        }
 
         [Route("airports")]
         [HttpGet]
         public IActionResult SearchAirports(string search)
         {
-            var airport = FlightStorage.SearchForAirport(search);
+            var flights = _context.Flights.
+                Include(f => f.From).
+                Include(f => f.To).
+                ToList();
+
+            var airport = _flightStorage.SearchForAirport(flights, search);
 
             if (airport == null)
             {
@@ -26,9 +41,14 @@ namespace FlightPlanner.Controllers
         [HttpPost]
         public IActionResult SearchFlights(SearchFlightsRequest req)
         {
+            var flights = _context.Flights.
+                Include(f => f.From).
+                Include(f => f.To).
+                ToList();
+
             lock (taskLock)
             {
-                var pageResult = FlightStorage.SearchForFlight(req);
+                var pageResult = _flightStorage.SearchForFlight(req, flights);
 
                 if (pageResult == null)
                 {
@@ -43,7 +63,7 @@ namespace FlightPlanner.Controllers
         [HttpGet]
         public IActionResult GetFlightById(int id)
         {
-            var flight = FlightStorage.GetFlight(id);
+            var flight = _flightStorage.GetFlight(id, _context);
 
             if (flight == null)
             {
