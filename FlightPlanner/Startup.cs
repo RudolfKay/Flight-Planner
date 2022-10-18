@@ -7,6 +7,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using FlightPlanner.Filters;
+using FlightPlanner.Core.Services;
+using FlightPlanner.Services;
+using FlightPlanner.Core.Models;
+using FlightPlanner.Core.Validations;
+using FlightPlanner.Data;
+using AutoMapper;
 
 namespace FlightPlanner
 {
@@ -35,6 +41,17 @@ namespace FlightPlanner
             {
                 options.UseSqlServer(Configuration.GetConnectionString("flight-planner"));
             });
+
+            services.AddScoped<IFlightPlannerDbContext, FlightPlannerDbContext>();
+            services.AddScoped<IDbService, DbService>();
+            services.AddScoped<IEntityService<Flight>, EntityService<Flight>>();
+            services.AddScoped<IEntityService<Airport>, EntityService<Airport>>();
+            services.AddScoped<IEntityService<User>, EntityService<User>>();
+            services.AddScoped<IFlightService, FlightService>();
+            services.AddScoped<IAirportService, AirportService>();
+            services.AddScoped<IFlightValidator, FlightValidator>();
+            services.AddScoped<ISearchFlightValidator, SearchFlightValidator>();
+            services.AddSingleton<IMapper>(AutoMapperConfig.CreateMapper());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

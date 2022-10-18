@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FlightPlanner.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightPlanner.Controllers
@@ -7,20 +7,21 @@ namespace FlightPlanner.Controllers
     [ApiController]
     public class TestingApiController : ControllerBase
     {
-        private readonly FlightPlannerDbContext _context;
+        private readonly IFlightService _flightService;
+        private readonly IAirportService _airportService;
 
-        public TestingApiController(FlightPlannerDbContext context)
+        public TestingApiController(IFlightService flightService, IAirportService airportService)
         {
-            _context = context;
+            _flightService = flightService;
+            _airportService = airportService;
         }
 
         [HttpPost]
         [Route("clear")]
         public IActionResult Clear()
         {
-            _context.Flights.RemoveRange(_context.Flights);
-            _context.Airports.RemoveRange(_context.Airports);
-            _context.SaveChanges();
+            _flightService.ClearFlights();
+            _airportService.ClearAirports();
 
             return Ok();
         }

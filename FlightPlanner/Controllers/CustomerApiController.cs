@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FlightPlanner.Core.Services;
+using FlightPlanner.Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
+using FlightPlanner.Models;
+using AutoMapper;
 
 namespace FlightPlanner.Controllers
 {
@@ -8,54 +10,48 @@ namespace FlightPlanner.Controllers
     [ApiController]
     public class CustomerApiController : ControllerBase
     {
-        private readonly FlightPlannerDbContext _context;
-        private static readonly object taskLock = new();
-        private readonly FlightStorage _flightStorage;
+        private static readonly object taskLock = new(); 
+        private readonly IFlightService _flightService;
+        private readonly IAirportService _airportService;
+        private readonly IMapper _mapper;
 
-        public CustomerApiController(FlightPlannerDbContext context)
+        public CustomerApiController(IFlightService flightService, IAirportService airportService, IMapper mapper)
         {
-            _context = context;
-            _flightStorage = new FlightStorage();
+            _flightService = flightService;
+            _airportService = airportService;
+            _mapper = mapper;
         }
 
         [Route("airports")]
         [HttpGet]
         public IActionResult SearchAirports(string search)
         {
-            var flights = _context.Flights.
-                Include(f => f.From).
-                Include(f => f.To).
-                ToList();
-
-            var airport = _flightStorage.SearchForAirport(flights, search);
+            var airport = _airportService.SearchForAirport(search);
 
             if (airport == null)
             {
                 return NotFound();
             }
 
-            return Ok(new []{airport});
+            var request = _mapper.Map<AirportRequest>(airport);
+
+            return Ok(new []{request});
         }
 
         [Route("flights/search")]
         [HttpPost]
         public IActionResult SearchFlights(SearchFlightsRequest req)
         {
-            var flights = _context.Flights.
-                Include(f => f.From).
-                Include(f => f.To).
-                ToList();
-
             lock (taskLock)
             {
-                var pageResult = _flightStorage.SearchForFlight(req, flights);
+                var pageResult = _flightService.SearchForFlight(req);
 
                 if (pageResult == null)
                 {
                     return BadRequest();
                 }
 
-                return Ok(pageResult);
+                return Ok(pageResult); 
             }
         }
     
@@ -63,14 +59,16 @@ namespace FlightPlanner.Controllers
         [HttpGet]
         public IActionResult GetFlightById(int id)
         {
-            var flight = _flightStorage.GetFlight(id, _context);
+            Flight flight = _flightService.GetCompleteFlightById(id);
 
             if (flight == null)
             {
                 return NotFound();
             }
 
-            return Ok(flight);
+            var response = _mapper.Map<FlightRequest>(flight);
+
+            return Ok(response);
         }
     }
 }

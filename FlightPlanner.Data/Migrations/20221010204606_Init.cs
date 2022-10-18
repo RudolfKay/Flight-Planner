@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace FlightPlanner.Migrations
+namespace FlightPlanner.Data.Migrations
 {
     public partial class Init : Migration
     {
